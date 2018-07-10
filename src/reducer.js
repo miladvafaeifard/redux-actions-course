@@ -1,5 +1,5 @@
 import {
-  createAction
+  createActions
 } from 'redux-actions';
 
 import {
@@ -33,13 +33,25 @@ const fixCaseFn = str =>
     index === 0 ? letter.toUpperCase() : acc + letter.toLowerCase(),
     '');
 
-export const updateCurrent = createAction(UPDATE_CURRENT, fixCaseFn);
-export const loadTodos = createAction(LOAD_TODOS);
-export const addTodo = createAction(ADD_TODO);
-export const replaceTodo = createAction(REPLACE_TODO);
-export const removeTodo = createAction(REMOVE_TODO);
-export const showLoader = createAction(SHOW_LOADER, truthyFn);
-export const hideLoader = createAction(HIDE_LOADER, falsyFn);
+export const {
+  updateCurrent,
+  loadTodos,
+  addTodo,
+  replaceTodo,
+  removeTodo,
+  showLoader,
+  hideLoader,
+} = createActions(
+  {
+    UPDATE_CURRENT: fixCaseFn,
+    SHOW_LOADER: truthyFn,
+    HIDE_LOADER: falsyFn,
+  },
+  LOAD_TODOS,
+  ADD_TODO,
+  REPLACE_TODO,
+  REMOVE_TODO
+);
 
 export const fetchTodos = () => {
   return dispatch => {
