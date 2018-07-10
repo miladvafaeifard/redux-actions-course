@@ -48,9 +48,9 @@ export const {
     UPDATE_CURRENT: fixCaseFn,
     SHOW_LOADER: truthyFn,
     HIDE_LOADER: falsyFn,
+    ADD_TODO: [todo => todo, (_, name) => ({ name })]
   },
   LOAD_TODOS,
-  ADD_TODO,
   REPLACE_TODO,
   REMOVE_TODO
 );
@@ -61,9 +61,6 @@ export const fetchTodos = () => {
     getTodos().then(todos => {
       dispatch(loadTodos(todos))
       dispatch(hideLoader())
-    }).catch(err => {
-      dispatch(loadTodos(err));
-      dispatch(hideLoader());
     })
   }
 }
@@ -74,6 +71,9 @@ export const saveTodo = name => {
     createTodo(name).then(res => {
       dispatch(addTodo(res))
       dispatch(hideLoader())
+    }).catch(err => {
+      dispatch(addTodo(err, name));
+      dispatch(hideLoader());
     })
   }
 }
@@ -113,10 +113,13 @@ export const getVisibleTodos = (todos, filter) => {
 }
 
 export default handleActions({
-    ADD_TODO: (state, action) => ({ ...state, currentTodo: '', todos: state.todos.concat(action.payload)}),
+    ADD_TODO: { 
+      next: (state, action) => ({ ...state, currentTodo: '', todos: state.todos.concat(action.payload) }), 
+      throw :(state, action) => ({ ...state, currentTodo: '', message: 'There was a problem loading todos' + action.meta.name })
+    },
     LOAD_TODOS: {
       next: (state, action) => ({...state, todos: action.payload }),
-      throw: (state, action) => ({ ...state, message: 'There was a problem loading todos'}),
+      throw: (state, action) => ({ ...state, message: 'There was a problem loading todos' }),
     },
     UPDATE_CURRENT: (state, action) => ({ ...state, currentTodo: action.payload }),
     REPLACE_TODO: (state, action) => ({ ...state, todos: state.todos.map(t => (t.id === action.payload.id ? action.payload : t)) }),
