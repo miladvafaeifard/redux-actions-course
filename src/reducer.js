@@ -1,10 +1,8 @@
 import {
   createActions,
-  handleAction,
+  handleActions,
   combineActions
 } from 'redux-actions';
-
-import reduceReducers from 'reduce-reducers';
 
 import {
   getTodos,
@@ -111,68 +109,11 @@ export const getVisibleTodos = (todos, filter) => {
   }
 }
 
-const addTodoReducer = handleAction(
-  ADD_TODO,
-  (state, action) => ({
-  ...state,
-  currentTodo: '',
-  todos: state.todos.concat(action.payload)
-  }), 
-  initState
-);
-
-const loadTodosReducer = handleAction(
-  LOAD_TODOS,
-  (state, action) => ({
-    ...state,
-    todos: action.payload
-  }),
-  initState
-);
-
-const updateCurrentReducer = handleAction(
-  UPDATE_CURRENT,
-  (state, action) => ({ 
-    ...state,
-    currentTodo: action.payload
-  }),
-  initState
-);
-
-const replaceTodoReducer = handleAction(
-  REPLACE_TODO,
-  (state, action) => ({
-    ...state,
-    todos: state.todos.map(
-      t => (t.id === action.payload.id ? action.payload : t)
-    )
-  }),
-  initState
-);
-
-const removeTodoReducer = handleAction(
-  REMOVE_TODO,
-  (state, action) => ({
-    ...state,
-    todos: state.todos.filter(t => t.id !== action.payload)
-  }),
-  initState
-);
-
-const loaderReducer = handleAction(
-  combineActions(HIDE_LOADER, SHOW_LOADER),
-  (state, action) => ({
-    ...state,
-    isLoading: action.payload
-  }),
-  initState
-);
-
-export default reduceReducers(
-  addTodoReducer, 
-  loadTodosReducer, 
-  updateCurrentReducer, 
-  replaceTodoReducer, 
-  removeTodoReducer, 
-  loaderReducer,
-);
+export default handleActions({
+    ADD_TODO: (state, action) => ({ ...state, currentTodo: '', todos: state.todos.concat(action.payload)}),
+    LOAD_TODOS: (state, action) => ({ ...state, todos: action.payload }),
+    UPDATE_CURRENT: (state, action) => ({ ...state, currentTodo: action.payload }),
+    REPLACE_TODO: (state, action) => ({ ...state, todos: state.todos.map(t => (t.id === action.payload.id ? action.payload : t)) }),
+    REMOVE_TODO: (state, action) => ({ ...state, todos: state.todos.filter(t => t.id !== action.payload) }),
+    [combineActions(HIDE_LOADER, SHOW_LOADER)]: (state, action) => ({ ...state, isLoading: action.payload }),
+}, initState);
