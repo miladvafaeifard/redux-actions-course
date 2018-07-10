@@ -61,6 +61,9 @@ export const fetchTodos = () => {
     getTodos().then(todos => {
       dispatch(loadTodos(todos))
       dispatch(hideLoader())
+    }).catch(err => {
+      dispatch(loadTodos(err));
+      dispatch(hideLoader());
     })
   }
 }
@@ -111,7 +114,10 @@ export const getVisibleTodos = (todos, filter) => {
 
 export default handleActions({
     ADD_TODO: (state, action) => ({ ...state, currentTodo: '', todos: state.todos.concat(action.payload)}),
-    LOAD_TODOS: (state, action) => ({ ...state, todos: action.payload }),
+    LOAD_TODOS: {
+      next: (state, action) => ({...state, todos: action.payload }),
+      throw: (state, action) => ({ ...state, message: 'There was a problem loading todos'}),
+    },
     UPDATE_CURRENT: (state, action) => ({ ...state, currentTodo: action.payload }),
     REPLACE_TODO: (state, action) => ({ ...state, todos: state.todos.map(t => (t.id === action.payload.id ? action.payload : t)) }),
     REMOVE_TODO: (state, action) => ({ ...state, todos: state.todos.filter(t => t.id !== action.payload) }),
