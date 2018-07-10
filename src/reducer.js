@@ -27,7 +27,13 @@ const HIDE_LOADER = 'HIDE_LOADER'
 const truthyFn = () => true;
 const falsyFn = () => false;
 
-export const updateCurrent = createAction(UPDATE_CURRENT);
+const fixCaseFn = str =>
+  str.split('')
+  .reduce((acc, letter, index) =>
+    index === 0 ? letter.toUpperCase() : acc + letter.toLowerCase(),
+    '');
+
+export const updateCurrent = createAction(UPDATE_CURRENT, fixCaseFn);
 export const loadTodos = createAction(LOAD_TODOS);
 export const addTodo = createAction(ADD_TODO);
 export const replaceTodo = createAction(REPLACE_TODO);
